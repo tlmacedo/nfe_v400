@@ -71,17 +71,7 @@ public class NFeRetAutorizacao {
 
         setInfProt(gettRetConsReciNFe().getProtNFe().get(0).getInfProt());
         System.out.printf("getInfprot: %s\n", getInfProt().getCStat());
-
-        /**
-         * <tpAmb>2</tpAmb>
-         *             <verAplic>AM4.00</verAplic>
-         *             <chNFe>13200608009246000136550010000006151202020066</chNFe>
-         *             <dhRecbto>2020-06-23T15:10:17-04:00</dhRecbto>
-         *             <nProt>113200008696476</nProt>
-         *             <digVal>+H54RVKbEgNu5GNNENpGr6aa2lU=</digVal>
-         *             <cStat>100</cStat>
-         *             <xMotivo>Autorizado o uso da NF-e</xMotivo>
-         */
+        System.out.printf("OiOiOi==>>>");
         System.out.printf(
                 String.format("\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n" +
                                 "<resultado>\n" +
@@ -100,11 +90,13 @@ public class NFeRetAutorizacao {
                         getInfProt().getChNFe(),
                         getInfProt().getDhRecbto(),
                         getInfProt().getNProt(),
-                        Base64.getEncoder().encodeToString(getInfProt().getDigVal()),
+                        (getInfProt().getDigVal() == null) ? "" :
+                                Base64.getEncoder().encodeToString(getInfProt().getDigVal()),
                         getInfProt().getCStat(),
                         getInfProt().getXMotivo()
                 )
         );
+        System.out.printf("==>>>OiOiOi");
 
         if (getInfProt().getCStat().equals("100")) {
             System.out.printf("\nPassou\n");

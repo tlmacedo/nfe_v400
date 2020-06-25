@@ -104,7 +104,7 @@ public class Teste {
                 "Wpe2d4HHhinzrIYEAgkcDJ72C6SJWDr7c8vBiXVxXVdmqykuMVg+8ANlsFnrd9MVxa65rY9Giwdy&#13;\n" +
                 "6zcOBffaHLHcLR2nyCqkC6O8t2ZsKpR07fEXwy3loFKnujtpnVGMeGq7fKeXP5WSKAp4jeVOQfTl&#13;\n" +
                 "VhoTC9XdnKE03w4VXVyGQ47tJETSKNd6FdnLq6bA25loHJrBVye2BXNyf97HTn0=</X509Certificate></X509Data></KeyInfo></Signature></NFe></enviNFe>";
-        String xmlRetAutorizacao = null;
+        String xmlRetAutorizacaoOk = null;
 
         NFev400 nFev400 = new NFev400(null, MY_ZONE_TIME, false, true);
         if (nFev400.errNoCertificado())
