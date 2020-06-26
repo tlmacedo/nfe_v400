@@ -64,14 +64,12 @@ public class NFeRetAutorizacao {
         return retorno;
     }
 
-    public String getXmlRetAutorizacaoNFe() throws RemoteException, InterruptedException, JAXBException {
+    public String getXmlRetAutorizacaoNFe() throws JAXBException, RemoteException, InterruptedException, ExceptionDuplicidadeNFe {
         boolean consErr;
         while (consErr = !ConsultaRetAutorizacao())
             Thread.sleep(1000);
 
         setInfProt(gettRetConsReciNFe().getProtNFe().get(0).getInfProt());
-        System.out.printf("getInfprot: %s\n", getInfProt().getCStat());
-        System.out.printf("OiOiOi==>>>");
         System.out.printf(
                 String.format("\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n" +
                                 "<resultado>\n" +
@@ -96,14 +94,32 @@ public class NFeRetAutorizacao {
                         getInfProt().getXMotivo()
                 )
         );
-        System.out.printf("==>>>OiOiOi");
 
-        if (getInfProt().getCStat().equals("100")) {
-            System.out.printf("\nPassou\n");
-        } else {
-            System.out.printf("\nErrou\n");
+        if (!getInfProt().getCStat().equals("100")) {
+            System.out.printf("\nPoxaPoxaPoxa\n");
             throw new ExceptionDuplicidadeNFe(
-                    String.format("cStat")
+                    String.format("\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n" +
+                                    "<resultado>\n" +
+                                    "\t<tpAmb>%s</tpAmb>\n" +
+                                    "\t<verAplic>%s</verAplic>\n" +
+                                    "\t<chNFe>%s</chNFe>\n" +
+                                    "\t<dhRecbto>%s</dhRecbto>\n" +
+                                    "\t<nProt>%s</nProt>\n" +
+                                    "\t<digVal>%s</digVal>\n" +
+                                    "\t<cStat>%s</cStat>\n" +
+                                    "\t<xMotivo>%s</xMotivo>\n" +
+                                    "</resultado>" +
+                                    "\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n",
+                            getInfProt().getTpAmb(),
+                            getInfProt().getVerAplic(),
+                            getInfProt().getChNFe(),
+                            getInfProt().getDhRecbto(),
+                            getInfProt().getNProt(),
+                            (getInfProt().getDigVal() == null) ? "" :
+                                    Base64.getEncoder().encodeToString(getInfProt().getDigVal()),
+                            getInfProt().getCStat(),
+                            getInfProt().getXMotivo()
+                    )
             );
         }
 

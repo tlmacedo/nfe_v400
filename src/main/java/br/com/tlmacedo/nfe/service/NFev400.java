@@ -98,55 +98,49 @@ public class NFev400 {
 
     }
 
-    public Task getNewTaskNFe() {
+    public Task getNewTaskNFe() throws ExceptionDuplicidadeNFe {
         int qtdTasks = getTaskList().size();
         final int[] cont = {0};
         return new Task<Void>() {
             @Override
             protected Void call() throws Exception {
                 updateMessage("Loading...");
-                try {
-                    for (Pair<String, String> tarefa : getTaskList()) {
-                        updateProgress(cont[0]++, qtdTasks);
-                        Thread.sleep(200);
-                        updateMessage(String.format("%s", tarefa.second));
-                        switch (tarefa.first) {
-                            case "NFE_GERAR":
-                                if (getEnviNfeVO() == null)
-                                    Thread.currentThread().interrupt();
-                                setXml(new EnviNfe_v400().getXmlNfe(getEnviNfeVO()));
-                                break;
-                            case "NFE_ASSINAR":
-                                if (getXml() == null)
-                                    Thread.currentThread().interrupt();
-                                setXmlAssinado(new NFeAssinar(getXml()).getXmlAssinadoNFe());
-                                break;
-                            case "NFE_TRANSMITIR":
-                                if (getXmlAssinado() == null)
-                                    Thread.currentThread().interrupt();
-                                setXmlAutorizacao(new NFeAutorizacao(getXmlAssinado()).getXmlAutorizacaoNFe());
-                                break;
-                            case "NFE_RETORNO":
-                                if (XML_CONS_RECIBO == null)
-                                    Thread.currentThread().interrupt();
-                                setXmlRetAutorizacao(new NFeRetAutorizacao(XML_CONS_RECIBO).getXmlRetAutorizacaoNFe());
-                                break;
-                            case "NFE_PROC":
-                                if (getXmlRetAutorizacao() == null)
-                                    Thread.currentThread().interrupt();
-                                setXmlProcNfe(new NFeProc(getXmlAssinado(), getXmlRetAutorizacao()).getStrResultNFeProc());
-                                break;
-//                            case RELATORIO_IMPRIME_NFE:
-//                                if (xmlNFeProcProperty().getValue() == null)
-//                                    Thread.currentThread().interrupt();
-//                                ControllerPrincipal.getCtrlPrincipal().getPrincipalStage().getScene().setCursor(Cursor.CROSSHAIR);
-//                                ServiceFileXmlSave.saveTNfeProcToFile(nFev400Property().getValue().getProcNFe().gettNfeProc());
-//                                ControllerPrincipal.getCtrlPrincipal().getPrincipalStage().getScene().setCursor(Cursor.DEFAULT);
-//                                break;
-                        }
+                for (Pair<String, String> tarefa : getTaskList()) {
+                    updateProgress(cont[0]++, qtdTasks);
+                    Thread.sleep(200);
+                    updateMessage(String.format("%s", tarefa.second));
+                    switch (tarefa.first) {
+                        case "NFE_GERAR":
+                            if (getEnviNfeVO() == null)
+                                Thread.currentThread().interrupt();
+                            setXml(new EnviNfe_v400().getXmlNfe(getEnviNfeVO()));
+                            break;
+                        case "NFE_ASSINAR":
+                            if (getXml() == null)
+                                Thread.currentThread().interrupt();
+                            setXmlAssinado(new NFeAssinar(getXml()).getXmlAssinadoNFe());
+                            break;
+                        case "NFE_TRANSMITIR":
+                            if (getXmlAssinado() == null)
+                                Thread.currentThread().interrupt();
+                            setXmlAutorizacao(new NFeAutorizacao(getXmlAssinado()).getXmlAutorizacaoNFe());
+                            break;
+                        case "NFE_RETORNO":
+                            if (XML_CONS_RECIBO == null)
+                                Thread.currentThread().interrupt();
+                            setXmlRetAutorizacao(new NFeRetAutorizacao(XML_CONS_RECIBO).getXmlRetAutorizacaoNFe());
+                            break;
+                        case "NFE_PROC":
+                            if (getXmlRetAutorizacao() == null)
+                                Thread.currentThread().interrupt();
+                            setXmlProcNfe(new NFeProc(getXmlAssinado(), getXmlRetAutorizacao()).getStrResultNFeProc());
+                            break;
+                        case "RELATORIO_IMPRIME_NFE":
+                            if (getXmlProcNfe() == null)
+                                Thread.currentThread().interrupt();
+//                            ServiceFileXmlSave.saveTNfeProcToFile(nFev400Property().getValue().getProcNFe().gettNfeProc());
+                            break;
                     }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
                 }
                 updateMessage("tarefa concluída!!!");
                 updateProgress(qtdTasks, qtdTasks);
@@ -156,7 +150,7 @@ public class NFev400 {
 
     }
 
-    public void exec_tarefas() throws InterruptedException, JAXBException, InvalidAlgorithmParameterException, MarshalException, NoSuchAlgorithmException, KeyStoreException, XMLSignatureException, UnrecoverableEntryException, XMLStreamException, RemoteException {
+    public void exec_tarefas() throws ExceptionDuplicidadeNFe, JAXBException, InvalidAlgorithmParameterException, MarshalException, NoSuchAlgorithmException, KeyStoreException, XMLSignatureException, UnrecoverableEntryException, XMLStreamException, RemoteException, InterruptedException {
         for (Pair<String, String> tarefa : getTaskList()) {
             Thread.sleep(200);
             switch (tarefa.first) {
