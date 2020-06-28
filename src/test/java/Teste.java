@@ -1,16 +1,5 @@
-import br.com.tlmacedo.nfe.service.NFeProc;
 import br.com.tlmacedo.nfe.service.NFev400;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.dsig.XMLSignatureException;
-import javax.xml.stream.XMLStreamException;
-import java.io.FileNotFoundException;
-import java.rmi.RemoteException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableEntryException;
 import java.time.ZoneId;
 
 public class Teste {
@@ -111,12 +100,12 @@ public class Teste {
             return;
 
 
-//        nFev400.setXmlAssinado(xmlAssinadoOK);
-//        nFev400.newNFev400_xmlConsRecibo(xmlReciboOK);
+        nFev400.setXmlAssinado(xmlAssinadoOK);
+        nFev400.newNFev400_xmlConsRecibo(xmlReciboOK);
 
 
-        nFev400.setXmlAssinado(xmlAssinadoErr);
-        nFev400.newNFev400_xmlConsRecibo(xmlReciboErr);
+//        nFev400.setXmlAssinado(xmlAssinadoErr);
+//        nFev400.newNFev400_xmlConsRecibo(xmlReciboErr);
 
 
         nFev400.exec_tarefas();

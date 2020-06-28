@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="wsdlNfe_v400">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/wsdlNfe_v400.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

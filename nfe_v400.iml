@@ -15,7 +15,7 @@
     <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:mac:14-ea+9" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:14-ea+9" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:mac:14-ea+9" level="project" />
-    <orderEntry type="library" name="wsdlNfe_v400" level="project" />
-    <orderEntry type="library" name="xsdNfe_pl009v120a" level="project" />
+    <orderEntry type="library" name="xsd_Nfe_Cte" level="project" />
+    <orderEntry type="library" name="wsdl_Nfe_v400" level="project" />
   </component>
 </module>

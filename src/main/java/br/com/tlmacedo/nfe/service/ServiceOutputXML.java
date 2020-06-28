@@ -4,7 +4,6 @@ package br.com.tlmacedo.nfe.service;
 import org.w3c.dom.Node;
 
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;

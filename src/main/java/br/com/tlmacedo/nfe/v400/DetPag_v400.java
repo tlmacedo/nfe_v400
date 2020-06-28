@@ -3,7 +3,6 @@ package br.com.tlmacedo.nfe.v400;
 import br.com.tlmacedo.nfe.model.vo.DetPagVO;
 import br.inf.portalfiscal.xsd.nfe.enviNFe.TNFe.InfNFe.Pag.DetPag;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public class DetPag_v400 {

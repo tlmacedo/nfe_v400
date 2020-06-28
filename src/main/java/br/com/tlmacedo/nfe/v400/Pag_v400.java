@@ -3,8 +3,6 @@ package br.com.tlmacedo.nfe.v400;
 import br.com.tlmacedo.nfe.model.vo.PagVO;
 import br.inf.portalfiscal.xsd.nfe.enviNFe.TNFe.InfNFe.Pag;
 
-import java.math.BigDecimal;
-
 public class Pag_v400 {
 
     Pag pag;

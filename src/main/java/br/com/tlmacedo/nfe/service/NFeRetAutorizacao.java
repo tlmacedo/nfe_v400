@@ -1,9 +1,8 @@
 package br.com.tlmacedo.nfe.service;
 
-import br.com.tlmacedo.nfe.v400.Nfe_v400;
 import br.inf.portalfiscal.wsdl.nfe.prod.nfeRetAutorizacao4.NfeRetAutorizacao4Stub;
-import br.inf.portalfiscal.xsd.nfe.retConsReciNFe.TRetConsReciNFe;
 import br.inf.portalfiscal.xsd.nfe.retConsReciNFe.TProtNFe.InfProt;
+import br.inf.portalfiscal.xsd.nfe.retConsReciNFe.TRetConsReciNFe;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
 
@@ -70,33 +69,8 @@ public class NFeRetAutorizacao {
             Thread.sleep(1000);
 
         setInfProt(gettRetConsReciNFe().getProtNFe().get(0).getInfProt());
-        System.out.printf(
-                String.format("\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n" +
-                                "<resultado>\n" +
-                                "\t<tpAmb>%s</tpAmb>\n" +
-                                "\t<verAplic>%s</verAplic>\n" +
-                                "\t<chNFe>%s</chNFe>\n" +
-                                "\t<dhRecbto>%s</dhRecbto>\n" +
-                                "\t<nProt>%s</nProt>\n" +
-                                "\t<digVal>%s</digVal>\n" +
-                                "\t<cStat>%s</cStat>\n" +
-                                "\t<xMotivo>%s</xMotivo>\n" +
-                                "</resultado>" +
-                                "\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n",
-                        getInfProt().getTpAmb(),
-                        getInfProt().getVerAplic(),
-                        getInfProt().getChNFe(),
-                        getInfProt().getDhRecbto(),
-                        getInfProt().getNProt(),
-                        (getInfProt().getDigVal() == null) ? "" :
-                                Base64.getEncoder().encodeToString(getInfProt().getDigVal()),
-                        getInfProt().getCStat(),
-                        getInfProt().getXMotivo()
-                )
-        );
 
         if (!getInfProt().getCStat().equals("100")) {
-            System.out.printf("\nPoxaPoxaPoxa\n");
             throw new ExceptionDuplicidadeNFe(
                     String.format("\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n" +
                                     "<resultado>\n" +

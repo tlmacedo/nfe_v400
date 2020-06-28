@@ -1,7 +1,6 @@
 package br.com.tlmacedo.nfe.v400;
 
 import br.com.tlmacedo.nfe.model.vo.*;
-import br.com.tlmacedo.nfe.model.vo.*;
 import br.inf.portalfiscal.xsd.nfe.enviNFe.TNFe.InfNFe.Det.Imposto.PIS;
 import br.inf.portalfiscal.xsd.nfe.enviNFe.TNFe.InfNFe.Det.Imposto.PIS.PISAliq;
 import br.inf.portalfiscal.xsd.nfe.enviNFe.TNFe.InfNFe.Det.Imposto.PIS.PISNT;
