@@ -3,9 +3,12 @@
     <output-path>$PROJECT_DIR$/lib</output-path>
     <root id="archive" name="nfe_v400.jar">
       <element id="module-output" name="nfe_v400" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/xsdCte_pl300nt2018_002.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/wsdlNfe_v400.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/xsdNfe_pl009v120a.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-base/14-ea+9/javafx-base-14-ea+9-mac.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/wsdl_Nfe_v400.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-graphics/14-ea+9/javafx-graphics-14-ea+9-mac.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-base/14-ea+9/javafx-base-14-ea+9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/xsd_Nfe_Cte.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-graphics/14-ea+9/javafx-graphics-14-ea+9.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

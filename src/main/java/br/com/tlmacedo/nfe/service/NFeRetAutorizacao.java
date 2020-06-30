@@ -63,41 +63,52 @@ public class NFeRetAutorizacao {
         return retorno;
     }
 
-    public String getXmlRetAutorizacaoNFe() throws JAXBException, RemoteException, InterruptedException, ExceptionDuplicidadeNFe {
-        boolean consErr;
-        while (consErr = !ConsultaRetAutorizacao())
+    public String getXmlRetAutorizacaoNFe() throws JAXBException, RemoteException, InterruptedException, ExceptionNFe {
+        System.out.printf("\n0002");
+        while (!ConsultaRetAutorizacao()) {
+            System.out.printf("\n0003");
             Thread.sleep(1000);
+        }
+        System.out.printf("\n0004");
 
         setInfProt(gettRetConsReciNFe().getProtNFe().get(0).getInfProt());
-
-        if (!getInfProt().getCStat().equals("100")) {
-            throw new ExceptionDuplicidadeNFe(
-                    String.format("\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n" +
-                                    "<resultado>\n" +
-                                    "\t<tpAmb>%s</tpAmb>\n" +
-                                    "\t<verAplic>%s</verAplic>\n" +
-                                    "\t<chNFe>%s</chNFe>\n" +
-                                    "\t<dhRecbto>%s</dhRecbto>\n" +
-                                    "\t<nProt>%s</nProt>\n" +
-                                    "\t<digVal>%s</digVal>\n" +
-                                    "\t<cStat>%s</cStat>\n" +
-                                    "\t<xMotivo>%s</xMotivo>\n" +
-                                    "</resultado>" +
-                                    "\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n",
-                            getInfProt().getTpAmb(),
-                            getInfProt().getVerAplic(),
-                            getInfProt().getChNFe(),
-                            getInfProt().getDhRecbto(),
-                            getInfProt().getNProt(),
-                            (getInfProt().getDigVal() == null) ? "" :
-                                    Base64.getEncoder().encodeToString(getInfProt().getDigVal()),
-                            getInfProt().getCStat(),
-                            getInfProt().getXMotivo()
-                    )
-            );
+        System.out.printf("\n0005");
+        switch (getInfProt().getCStat()) {
+            case "100":
+                break;
+            default:
+                throw new ExceptionNFe(Integer.valueOf(getInfProt().getTpAmb()),
+                        Integer.valueOf(getInfProt().getCStat()),
+                        getInfProt().getXMotivo());
         }
+        System.out.printf("\n0006");
 
         return getXml();
+    }
+
+    private String getStrInfProt() {
+        return String.format("\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n" +
+                        "<resultado>\n" +
+                        "\t<tpAmb>%s</tpAmb>\n" +
+                        "\t<verAplic>%s</verAplic>\n" +
+                        "\t<chNFe>%s</chNFe>\n" +
+                        "\t<dhRecbto>%s</dhRecbto>\n" +
+                        "\t<nProt>%s</nProt>\n" +
+                        "\t<digVal>%s</digVal>\n" +
+                        "\t<cStat>%s</cStat>\n" +
+                        "\t<xMotivo>%s</xMotivo>\n" +
+                        "</resultado>" +
+                        "\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n",
+                getInfProt().getTpAmb(),
+                getInfProt().getVerAplic(),
+                getInfProt().getChNFe(),
+                getInfProt().getDhRecbto(),
+                getInfProt().getNProt(),
+                (getInfProt().getDigVal() == null) ? "" :
+                        Base64.getEncoder().encodeToString(getInfProt().getDigVal()),
+                getInfProt().getCStat(),
+                getInfProt().getXMotivo()
+        );
     }
 
     /**

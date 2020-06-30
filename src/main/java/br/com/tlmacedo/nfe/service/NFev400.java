@@ -98,7 +98,7 @@ public class NFev400 {
 
     }
 
-    public Task getNewTaskNFe() throws ExceptionDuplicidadeNFe {
+    public Task getNewTaskNFe() throws ExceptionNFe {
         int qtdTasks = getTaskList().size();
         final int[] cont = {0};
         return new Task<Void>() {
@@ -147,10 +147,10 @@ public class NFev400 {
                 return null;
             }
         };
-
     }
 
-    public void exec_tarefas() throws ExceptionDuplicidadeNFe, JAXBException, InvalidAlgorithmParameterException, MarshalException, NoSuchAlgorithmException, KeyStoreException, XMLSignatureException, UnrecoverableEntryException, XMLStreamException, RemoteException, InterruptedException {
+    public void exec_tarefas() throws ExceptionNFe, JAXBException, InvalidAlgorithmParameterException, MarshalException, NoSuchAlgorithmException, KeyStoreException, XMLSignatureException, UnrecoverableEntryException, XMLStreamException, RemoteException, InterruptedException {
+//        try {
         for (Pair<String, String> tarefa : getTaskList()) {
             Thread.sleep(200);
             switch (tarefa.first) {
@@ -170,14 +170,20 @@ public class NFev400 {
                     setXmlAutorizacao(new NFeAutorizacao(getXmlAssinado()).getXmlAutorizacaoNFe());
                     break;
                 case "NFE_RETORNO":
+                    System.out.printf("\n0000");
                     if (XML_CONS_RECIBO == null)
                         Thread.currentThread().interrupt();
+                    System.out.printf("\n0001");
                     setXmlRetAutorizacao(new NFeRetAutorizacao(XML_CONS_RECIBO).getXmlRetAutorizacaoNFe());
+                    System.out.printf("\n0007");
                     break;
                 case "NFE_PROC":
+                    System.out.printf("\n0008");
                     if (getXmlRetAutorizacao() == null)
                         Thread.currentThread().interrupt();
+                    System.out.printf("\n0009");
                     setXmlProcNfe(new NFeProc(getXmlAssinado(), getXmlRetAutorizacao()).getStrResultNFeProc());
+                    System.out.printf("\n0010");
                     break;
 //                            case RELATORIO_IMPRIME_NFE:
 //                                if (xmlNFeProcProperty().getValue() == null)
@@ -188,7 +194,10 @@ public class NFev400 {
 //                                break;
             }
         }
-
+//        } catch (Exception ex) {
+//            System.out.printf("passou por aqui!!!!!!!!\n");
+//            ex.printStackTrace();
+//        }
     }
 
 

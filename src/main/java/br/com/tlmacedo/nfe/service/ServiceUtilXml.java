@@ -53,7 +53,6 @@ public class ServiceUtilXml {
     public static <T> String objectToXml(Object obj) throws JAXBException {
         JAXBContext context = null;
         JAXBElement<?> element = null;
-        System.out.printf("xmlName: [%s]\n", obj.getClass().getSimpleName());
         switch (obj.getClass().getSimpleName()) {
             case "TConsStatServ":
                 context = JAXBContext.newInstance(TConsStatServ.class);
