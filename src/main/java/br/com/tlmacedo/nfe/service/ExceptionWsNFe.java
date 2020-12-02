@@ -1,17 +1,15 @@
 package br.com.tlmacedo.nfe.service;
 
-public class ExceptionNFe extends Exception {
-
-    public static final long serialVersionUID = 1L;
+public class ExceptionWsNFe extends Exception {
 
     private int tpAmb, cStat;
     private String xMotivo;
 
-    public ExceptionNFe(Throwable cause) {
+    public ExceptionWsNFe(Throwable cause) {
         super(cause);
     }
 
-    public ExceptionNFe(int tpAmb, int cStat, String xMotivo) {
+    public ExceptionWsNFe(int tpAmb, int cStat, String xMotivo) {
         super(String.format("\n<tpAmb>%d</tpAmb>\n<cStat>%d</cStat>\n<xMotivo>%s</xMotivo>\n",
                 tpAmb,
                 cStat,
@@ -45,3 +43,5 @@ public class ExceptionNFe extends Exception {
         this.xMotivo = xMotivo;
     }
 }
+
+

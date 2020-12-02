@@ -69,7 +69,7 @@ public class Ide_v400 {
          * AAAA-MM-DDThh:mm:ssTZD
          */
         if (!getIdeVO().getDhEmi().equals(""))
-            getIde().setDhEmi(ZonedDateTime.of(getIdeVO().getDhEmi(), NFev400.ZONE_ID).format(NFev400.DTF_NFE_TO_LOCAL_DATE));
+            getIde().setDhEmi(ZonedDateTime.of(getIdeVO().getDhEmi(), NFev400.getZoneId()).format(NFev400.getDtfNfeToLocalDate()));
 
         /**Data e hora de Saída ou da Entrada da Mercadoria/Produto
          * Data e hora no formato UTC (Universal Coordinated Time):
@@ -77,7 +77,7 @@ public class Ide_v400 {
          * Observação: Não informar este campo para a NFC-e.
          */
         if (!getIdeVO().getDhSaiEnt().equals(""))
-            getIde().setDhSaiEnt(ZonedDateTime.of(getIdeVO().getDhSaiEnt(), NFev400.ZONE_ID).format(NFev400.DTF_NFE_TO_LOCAL_DATE));    //Data e hora de Saída ou da Entrada da Mercadoria/Produto
+            getIde().setDhSaiEnt(ZonedDateTime.of(getIdeVO().getDhSaiEnt(), NFev400.getZoneId()).format(NFev400.getDtfNfeToLocalDate()));    //Data e hora de Saída ou da Entrada da Mercadoria/Produto
 
         /**Tipo de Operação
          * 0=Entrada;

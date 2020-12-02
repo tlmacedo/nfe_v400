@@ -1,12 +1,12 @@
 package br.com.tlmacedo.nfe.service;
 
+
 import br.inf.portalfiscal.wsdl.nfe.prod.nfeAutorizacao4.NfeAutorizacao4Stub;
 import br.inf.portalfiscal.wsdl.nfe.prod.nfeAutorizacao4.NfeAutorizacao4Stub.NfeDadosMsg;
 import br.inf.portalfiscal.wsdl.nfe.prod.nfeAutorizacao4.NfeAutorizacao4Stub.NfeResultMsg;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.rmi.RemoteException;
 
@@ -14,47 +14,54 @@ public class NFeAutorizacao {
 
     private OMElement ome = null;
 
-    private String xml = null;
     private NfeDadosMsg dadosMsg_Prod;
     private NfeAutorizacao4Stub stub_Prod;
     private NfeResultMsg resultMsg_Prod;
+    private String xmlAutorizado;
 
     private br.inf.portalfiscal.wsdl.nfe.hom.nfeAutorizacao4.NfeAutorizacao4Stub.NfeDadosMsg dadosMsg_Hom;
     private br.inf.portalfiscal.wsdl.nfe.hom.nfeAutorizacao4.NfeAutorizacao4Stub stub_Hom;
     private br.inf.portalfiscal.wsdl.nfe.hom.nfeAutorizacao4.NfeAutorizacao4Stub.NfeResultMsg resultMsg_Hom;
 
 
-    public NFeAutorizacao(String xmlNFeAssinada) throws XMLStreamException, RemoteException, JAXBException {
+    public NFeAutorizacao(String xmlNFeAssinada) throws XMLStreamException, RemoteException {
+
         setOme(AXIOMUtil.stringToOM(xmlNFeAssinada));
 
-        if (NFev400.AMB_PRODUCAO) {
-            setDadosMsg_Prod(new NfeDadosMsg());
+        if (NFev400.isAmbProducao()) {
+            setDadosMsg_Prod(new NfeAutorizacao4Stub.NfeDadosMsg());
             setStub_Prod(new NfeAutorizacao4Stub());
             getDadosMsg_Prod().setExtraElement(getOme());
             setResultMsg_Prod(getStub_Prod().nfeAutorizacaoLote(getDadosMsg_Prod()));
+            setXmlAutorizado(getResultMsg_Prod().getExtraElement().toString());
         } else {
             setDadosMsg_Hom(new br.inf.portalfiscal.wsdl.nfe.hom.nfeAutorizacao4.NfeAutorizacao4Stub.NfeDadosMsg());
             setStub_Hom(new br.inf.portalfiscal.wsdl.nfe.hom.nfeAutorizacao4.NfeAutorizacao4Stub());
             getDadosMsg_Hom().setExtraElement(getOme());
             setResultMsg_Hom(getStub_Hom().nfeAutorizacaoLote(getDadosMsg_Hom()));
+            setXmlAutorizado(getResultMsg_Hom().getExtraElement().toString());
         }
+
+        NFePrintPrompt.print("xmlAutorizado", getXmlAutorizado());
+
     }
 
-    public String getXmlAutorizacaoNFe() throws JAXBException {
-        if (NFev400.AMB_PRODUCAO)
-            setXml(getResultMsg_Prod().getExtraElement().toString());
-        else
-            setXml(getResultMsg_Hom().getExtraElement().toString());
-
-        if (NFev400.PRINT_PROMPT)
-            System.out.printf("\n%sxmlNFeAutorizacao: \n%s\n",
-                    (NFev400.AMB_PRODUCAO) ? "prod_" : "hom_",
-                    getXml());
-
-        NFeConsRecibo.getXmlConsReciNFe(getXml());
-        return getXml();
-    }
-
+//    public String getXmlAutorizacaoNFe() throws JAXBException {
+//        if (NFev400.isAmbProducao())
+//            setXmlAutorizado(getResultMsg_Prod().getExtraElement().toString());
+//        else
+//            setXmlAutorizado(getResultMsg_Hom().getExtraElement().toString());
+//
+////        if (NFev400.PRINT_PROMPT)
+////            System.out.printf("\n%sxmlNFeAutorizacao: \n%s\n",
+////                    (NFev400.AMB_PRODUCAO) ? "prod_" : "hom_",
+////                    getXml());
+//
+////        NFeConsRecibo.getXmlConsReciNFe(getXml());
+//
+//        return getXmlAutorizado();
+//
+//    }
 
     /**
      * Begin Getters and Setters
@@ -66,14 +73,6 @@ public class NFeAutorizacao {
 
     public void setOme(OMElement ome) {
         this.ome = ome;
-    }
-
-    public String getXml() {
-        return xml;
-    }
-
-    public void setXml(String xml) {
-        this.xml = xml;
     }
 
     public NfeDadosMsg getDadosMsg_Prod() {
@@ -98,6 +97,14 @@ public class NFeAutorizacao {
 
     public void setResultMsg_Prod(NfeResultMsg resultMsg_Prod) {
         this.resultMsg_Prod = resultMsg_Prod;
+    }
+
+    public String getXmlAutorizado() {
+        return xmlAutorizado;
+    }
+
+    public void setXmlAutorizado(String xmlAutorizado) {
+        this.xmlAutorizado = xmlAutorizado;
     }
 
     public br.inf.portalfiscal.wsdl.nfe.hom.nfeAutorizacao4.NfeAutorizacao4Stub.NfeDadosMsg getDadosMsg_Hom() {

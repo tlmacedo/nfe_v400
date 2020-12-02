@@ -14,7 +14,7 @@ import java.util.Base64;
 public class NFeRetAutorizacao {
 
     private OMElement ome = null;
-    private String xml;
+    private String xmlRetornoAutorizacao;
     private TRetConsReciNFe tRetConsReciNFe = null;
     private InfProt infProt = null;
 
@@ -28,62 +28,58 @@ public class NFeRetAutorizacao {
     private br.inf.portalfiscal.wsdl.nfe.hom.nfeRetAutorizacao4.NfeRetAutorizacao4Stub.NfeResultMsg resultMsg_Hom;
 
 
-    public NFeRetAutorizacao(String xmlConsRecibo) throws XMLStreamException, RemoteException, InterruptedException, JAXBException {
-        setOme(AXIOMUtil.stringToOM(xmlConsRecibo));
+    public NFeRetAutorizacao(String xmlConsRecibo) throws RemoteException, XMLStreamException, JAXBException, InterruptedException, ExceptionWsNFe {
+        try {
+            setOme(AXIOMUtil.stringToOM(xmlConsRecibo));
 
-        if (NFev400.AMB_PRODUCAO) {
-            setDadosMsg_Prod(new NfeRetAutorizacao4Stub.NfeDadosMsg());
-            setStub_Prod(new NfeRetAutorizacao4Stub());
-            getDadosMsg_Prod().setExtraElement(getOme());
-        } else {
-            setDadosMsg_Hom(new br.inf.portalfiscal.wsdl.nfe.hom.nfeRetAutorizacao4.NfeRetAutorizacao4Stub.NfeDadosMsg());
-            setStub_Hom(new br.inf.portalfiscal.wsdl.nfe.hom.nfeRetAutorizacao4.NfeRetAutorizacao4Stub());
-            getDadosMsg_Hom().setExtraElement(getOme());
+            if (NFev400.isAmbProducao()) {
+                setDadosMsg_Prod(new NfeRetAutorizacao4Stub.NfeDadosMsg());
+                setStub_Prod(new NfeRetAutorizacao4Stub());
+                getDadosMsg_Prod().setExtraElement(getOme());
+            } else {
+                setDadosMsg_Hom(new br.inf.portalfiscal.wsdl.nfe.hom.nfeRetAutorizacao4.NfeRetAutorizacao4Stub.NfeDadosMsg());
+                setStub_Hom(new br.inf.portalfiscal.wsdl.nfe.hom.nfeRetAutorizacao4.NfeRetAutorizacao4Stub());
+                getDadosMsg_Hom().setExtraElement(getOme());
+            }
+
+            while (!ConsultaRetAutorizacao())
+                Thread.sleep(1000);
+
+            setInfProt(gettRetConsReciNFe().getProtNFe().get(0).getInfProt());
+
+            switch (getInfProt().getCStat()) {
+                case "100":
+                    break;
+                default:
+                    throw new ExceptionWsNFe(Integer.valueOf(getInfProt().getTpAmb()),
+                            Integer.valueOf(getInfProt().getCStat()),
+                            getInfProt().getXMotivo());
+            }
+            System.out.printf("passouDireto: [%s]\n", "NFeRetAutorizacao");
+        } catch (Exception ex) {
+            System.out.printf("errorAqui: [%s]\n", "NFeRetAutorizacao");
+            ex.printStackTrace();
         }
+
     }
 
-    public boolean ConsultaRetAutorizacao() throws RemoteException, JAXBException {
+    public boolean ConsultaRetAutorizacao() throws JAXBException, RemoteException {
+
         boolean retorno = false;
-        if (NFev400.AMB_PRODUCAO) {
+        if (NFev400.isAmbProducao()) {
             setResultMsg_Prod(getStub_Prod().nfeRetAutorizacaoLote(getDadosMsg_Prod()));
-            setXml(getResultMsg_Hom().getExtraElement().toString());
+            setXmlRetornoAutorizacao(getResultMsg_Hom().getExtraElement().toString());
         } else {
             setResultMsg_Hom(getStub_Hom().nfeRetAutorizacaoLote(getDadosMsg_Hom()));
-            setXml(getResultMsg_Hom().getExtraElement().toString());
+            setXmlRetornoAutorizacao(getResultMsg_Hom().getExtraElement().toString());
         }
-        settRetConsReciNFe(ServiceUtilXml.xmlToObject(getXml(), TRetConsReciNFe.class));
-        if (!tRetConsReciNFe.getCStat().equals("105"))
+        settRetConsReciNFe(ServiceUtilXml.xmlToObject(getXmlRetornoAutorizacao(), TRetConsReciNFe.class));
+        if (!gettRetConsReciNFe().getCStat().equals("105"))
             retorno = true;
-        if (NFev400.PRINT_PROMPT)
-            System.out.printf("\n%sxml%sNFeRetAutorizacao: \n%s\n",
-                    (NFev400.AMB_PRODUCAO) ? "prod_" : "hom_",
-                    (!retorno) ? "_parcial_" : "",
-                    getXml());
+        NFePrintPrompt.print("xmlNFeRetAutorizacao", getXmlRetornoAutorizacao());
 
         return retorno;
-    }
 
-    public String getXmlRetAutorizacaoNFe() throws JAXBException, RemoteException, InterruptedException, ExceptionNFe {
-        System.out.printf("\n0002");
-        while (!ConsultaRetAutorizacao()) {
-            System.out.printf("\n0003");
-            Thread.sleep(1000);
-        }
-        System.out.printf("\n0004");
-
-        setInfProt(gettRetConsReciNFe().getProtNFe().get(0).getInfProt());
-        System.out.printf("\n0005");
-        switch (getInfProt().getCStat()) {
-            case "100":
-                break;
-            default:
-                throw new ExceptionNFe(Integer.valueOf(getInfProt().getTpAmb()),
-                        Integer.valueOf(getInfProt().getCStat()),
-                        getInfProt().getXMotivo());
-        }
-        System.out.printf("\n0006");
-
-        return getXml();
     }
 
     private String getStrInfProt() {
@@ -123,12 +119,12 @@ public class NFeRetAutorizacao {
         this.ome = ome;
     }
 
-    public String getXml() {
-        return xml;
+    public String getXmlRetornoAutorizacao() {
+        return xmlRetornoAutorizacao;
     }
 
-    public void setXml(String xml) {
-        this.xml = xml;
+    public void setXmlRetornoAutorizacao(String xmlRetornoAutorizacao) {
+        this.xmlRetornoAutorizacao = xmlRetornoAutorizacao;
     }
 
     public TRetConsReciNFe gettRetConsReciNFe() {

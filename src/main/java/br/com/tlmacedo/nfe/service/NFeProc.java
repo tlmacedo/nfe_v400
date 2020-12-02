@@ -12,7 +12,7 @@ import java.util.Base64;
 
 public class NFeProc {
 
-    private String xml;
+    private String xmlNFeProc;
     private String strChaveId;
     private String strNFeAssinado;
     private String strNFeRetAutorizacao;
@@ -21,10 +21,14 @@ public class NFeProc {
 
 
     public NFeProc(String xmlNFeAssinado, String xmlNFeRetAutorizacao) throws JAXBException {
+
         settNfeProc(new TNfeProc());
         setStrNFeAssinado(xmlNFeAssinado);
         setStrNFeRetAutorizacao(xmlNFeRetAutorizacao);
         setReciNFe(ServiceUtilXml.xmlToObject(xmlNFeRetAutorizacao, TRetConsReciNFe.class));
+        setXmlNFeProc(ServiceUtilXml.objectToXml(getResultNFeProc()));
+        NFePrintPrompt.print("xmlNFeProc", getXmlNFeProc());
+
     }
 
     public TNFe getTNFe() throws JAXBException {
@@ -44,29 +48,20 @@ public class NFeProc {
         gettNfeProc().setVersao(getReciNFe().getVersao());
         gettNfeProc().setNFe(getTNFe());
         gettNfeProc().setProtNFe(getTProtNFe());
-        NFev400.DIG_VAL = Base64.getEncoder().encodeToString(gettNfeProc().getProtNFe().getInfProt().getDigVal());
+        NFev400.setDigVal(Base64.getEncoder().encodeToString(gettNfeProc().getProtNFe().getInfProt().getDigVal()));
         return gettNfeProc();
-    }
-
-    public String getStrResultNFeProc() throws JAXBException {
-        setXml(ServiceUtilXml.objectToXml(getResultNFeProc()));
-        if (NFev400.PRINT_PROMPT)
-            System.out.printf("\n%sxmlNFeProc: \n%s\n",
-                    (NFev400.AMB_PRODUCAO) ? "prod_" : "hom_",
-                    getXml());
-        return getXml();
     }
 
     /**
      * Begin Getters and Setters
      */
 
-    public String getXml() {
-        return xml;
+    public String getXmlNFeProc() {
+        return xmlNFeProc;
     }
 
-    public void setXml(String xml) {
-        this.xml = xml;
+    public void setXmlNFeProc(String xmlNFeProc) {
+        this.xmlNFeProc = xmlNFeProc;
     }
 
     public String getStrChaveId() {
@@ -109,8 +104,7 @@ public class NFeProc {
         this.reciNFe = reciNFe;
     }
 
-
-/**
- * END Getters and Setters
- */
+    /**
+     * END Getters and Setters
+     */
 }

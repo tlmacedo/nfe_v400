@@ -27,8 +27,10 @@ public class ServiceLoadCertificates {
     private KeyStore.Builder builder;
     private String alias;
 
-    public ServiceLoadCertificates(String token_cfg) {
-        String configName = getClass().getClassLoader().getResource(token_cfg).getPath();
+    public ServiceLoadCertificates() {
+        String configName = getClass().getClassLoader().getResource("certificados/tokenSafeNet5100.cfg").getPath();
+
+        System.out.printf("configName:[%s]\n", configName);
 
         setP(getP().configure(configName));
         Security.addProvider(getP());
@@ -36,6 +38,7 @@ public class ServiceLoadCertificates {
     }
 
     public void loadToken() throws KeyStoreException, UnrecoverableEntryException, NoSuchAlgorithmException {
+        System.out.printf("carregandoToke...\n");
         KeyStore.CallbackHandlerProtection chp =
                 new KeyStore.CallbackHandlerProtection(callbacks -> {
                     for (int i = 0; i < callbacks.length; i++) {
@@ -56,6 +59,7 @@ public class ServiceLoadCertificates {
                 setPrivateKey(getPkEntry().getPrivateKey());
                 break;
             }
+            System.out.printf("getAliases: %s\n", getAlias());
         }
 
         setX509Certificate((X509Certificate) getPkEntry().getCertificate());
@@ -74,12 +78,14 @@ public class ServiceLoadCertificates {
 
     }
 
-    private void loadSocketDinamico() {
+    public void loadSocketDinamico() {
+        System.out.printf("iniciandoSocketDinamico\n");
         ServiceSocketFactoryDinamico socketFactoryDinamico = new ServiceSocketFactoryDinamico(getX509Certificate(), getPrivateKey());
         socketFactoryDinamico.setFileCacerts(getClass().getClassLoader().getResource("certificados/NFeCacerts").getPath());
 
         Protocol protocol = new Protocol("https", socketFactoryDinamico, 443);
         Protocol.registerProtocol("https", protocol);
+        System.out.printf("carregouSocketDinamico\n");
 
     }
 

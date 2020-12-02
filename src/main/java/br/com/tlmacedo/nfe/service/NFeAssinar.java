@@ -23,39 +23,48 @@ public class NFeAssinar {
     private Document document;
     private XMLSignatureFactory signatureFactory;
     private ArrayList<Transform> transformList;
-    private String xml;
+    private String xmlAssinado;
 
 
-    public NFeAssinar(String xml) throws UnrecoverableEntryException, NoSuchAlgorithmException, KeyStoreException, InvalidAlgorithmParameterException, MarshalException, XMLSignatureException {
+    public NFeAssinar(String xml) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, MarshalException, XMLSignatureException, KeyStoreException, UnrecoverableEntryException {
+        if (NFev400.getCERTIFICATES().getX509Certificate() == null)
+            NFev400.getCERTIFICATES().loadToken();
         assinar(xml);
+        NFePrintPrompt.print("xmlAssinado", getXmlAssinado());
+
     }
 
-    private void assinar(String xml) throws UnrecoverableEntryException, NoSuchAlgorithmException, KeyStoreException, InvalidAlgorithmParameterException, MarshalException, XMLSignatureException {
-        setDocument(ServiceDocumentFactory.documentFactory(xml));
-        setSignatureFactory(XMLSignatureFactory.getInstance("DOM"));
-        setTransformList(signatureFactory(getSignatureFactory()));
-
-        NFev400.CERTIFICATES.setKeyInfo(getSignatureFactory());
-
-        for (int i = 0; i < getDocument().getElementsByTagName(NFE).getLength(); i++) {
-            assinarNFe(i);
-        }
-    }
-
-    private ArrayList<Transform> signatureFactory(XMLSignatureFactory signatureFactory) {
-        ArrayList<Transform> transformList = new ArrayList<Transform>();
-        TransformParameterSpec tps = null;
+    private void assinar(String xml) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, MarshalException, XMLSignatureException {
         try {
-            Transform envelopedTransform = signatureFactory.newTransform(
-                    Transform.ENVELOPED, tps);
-            Transform c14NTransform = signatureFactory.newTransform(
-                    "http://www.w3.org/TR/2001/REC-xml-c14n-20010315", tps);
-            transformList.add(envelopedTransform);
-            transformList.add(c14NTransform);
-        } catch (InvalidAlgorithmParameterException | NoSuchAlgorithmException ex) {
+            setDocument(ServiceDocumentFactory.documentFactory(xml));
+            setSignatureFactory(XMLSignatureFactory.getInstance("DOM"));
+            setTransformList(signatureFactory(getSignatureFactory()));
+
+            NFev400.getCERTIFICATES().setKeyInfo(getSignatureFactory());
+
+            for (int i = 0; i < getDocument().getElementsByTagName(NFE).getLength(); i++)
+                assinarNFe(i);
+
+            System.out.printf("passouDireto: [%s]\n", "NFeAssinar");
+        } catch (Exception ex) {
+            System.out.printf("errorAqui: [%s]\n", "NFeAssinar");
             ex.printStackTrace();
         }
+    }
+
+    private ArrayList<Transform> signatureFactory(XMLSignatureFactory signatureFactory) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+        ArrayList<Transform> transformList = new ArrayList<Transform>();
+        TransformParameterSpec tps = null;
+
+        Transform envelopedTransform = signatureFactory.newTransform(
+                Transform.ENVELOPED, tps);
+        Transform c14NTransform = signatureFactory.newTransform(
+                "http://www.w3.org/TR/2001/REC-xml-c14n-20010315", tps);
+        transformList.add(envelopedTransform);
+        transformList.add(c14NTransform);
+
         return transformList;
+
     }
 
     private void assinarNFe(int indexNFe) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, MarshalException, XMLSignatureException {
@@ -72,29 +81,26 @@ public class NFeAssinar {
                 getSignatureFactory().newSignatureMethod(SignatureMethod.RSA_SHA1, null),
                 Collections.singletonList(reference));
 
-        XMLSignature signature = getSignatureFactory().newXMLSignature(signedInfo, NFev400.CERTIFICATES.getKeyInfo());
+        XMLSignature signature = getSignatureFactory().newXMLSignature(signedInfo, NFev400.getCERTIFICATES().getKeyInfo());
 
-        DOMSignContext domSignContext = new DOMSignContext(NFev400.CERTIFICATES.getPrivateKey(),
+        DOMSignContext domSignContext = new DOMSignContext(NFev400.getCERTIFICATES().getPrivateKey(),
                 getDocument().getElementsByTagName(NFE).item(indexNFe));
 
         domSignContext.setBaseURI("ok");
 
         signature.sign(domSignContext);
 
-        setXml(ServiceOutputXML.outputXML(getDocument()));
-    }
+        setXmlAssinado(ServiceOutputXML.outputXML(getDocument()));
 
-    public String getXmlAssinadoNFe() {
-        if (NFev400.PRINT_PROMPT)
-            System.out.printf("\n%sxmlAssinado: \n%s\n",
-                    (NFev400.AMB_PRODUCAO) ? "prod_" : "hom_",
-                    getXml());
-        return getXml();
     }
 
     /**
      * Begin Getters and Setters
      */
+
+    public static String getNFE() {
+        return NFE;
+    }
 
     public Document getDocument() {
         return document;
@@ -120,12 +126,12 @@ public class NFeAssinar {
         this.transformList = transformList;
     }
 
-    public String getXml() {
-        return xml;
+    public String getXmlAssinado() {
+        return xmlAssinado;
     }
 
-    public void setXml(String xml) {
-        this.xml = xml;
+    public void setXmlAssinado(String xmlAssinado) {
+        this.xmlAssinado = xmlAssinado;
     }
 
     /**

@@ -13,7 +13,7 @@
         <maven.version>3.6.3</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputencoding>UTF-8</project.reporting.outputencoding>
-        <jdk.version>14.0.1</jdk.version>
+        <jdk.version>15.0.1</jdk.version>
         <maven.compiler.source>${jdk.version}</maven.compiler.source>
         <maven.compiler.target>${jdk.version}</maven.compiler.target>
     </properties>
@@ -53,15 +53,14 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
-            <version>14-ea+9</version>
+            <version>16-ea+2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-impl</artifactId>
+            <version>1.2.22</version>
         </dependency>
 
-
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.ws.commons.axiom</groupId>-->
-        <!--            <artifactId>axiom-impl</artifactId>-->
-        <!--            <version>1.2.22</version>-->
-        <!--        </dependency>-->
 
     </dependencies>
 

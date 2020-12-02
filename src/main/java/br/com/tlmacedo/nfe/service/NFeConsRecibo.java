@@ -9,19 +9,12 @@ public class NFeConsRecibo {
 
     private static TConsReciNFe tConsReciNFe;
     private static TRetEnviNFe tRetEnviNFe;
-    private static String xml;
+    private String xmlConsRecibo;
 
-
-    public static void getXmlConsReciNFe(String xmlRetAutorizacao) throws JAXBException {
-        settRetEnviNFe(ServiceUtilXml.xmlToObject(xmlRetAutorizacao, TRetEnviNFe.class));
-        setXml(ServiceUtilXml.objectToXml(newConsReciNFe()));
-        NFev400.XML_CONS_RECIBO = getXml();
-
-        if (NFev400.PRINT_PROMPT)
-            System.out.printf("\n%sxmlConsReciNFe:\n%s\n",
-                    (NFev400.AMB_PRODUCAO) ? "prod_" : "hom_",
-                    getXml());
-        //return getXml();
+    public NFeConsRecibo(String xmlRetornoAutorizacao) throws JAXBException {
+        settRetEnviNFe(ServiceUtilXml.xmlToObject(xmlRetornoAutorizacao, TRetEnviNFe.class));
+        setXmlConsRecibo(ServiceUtilXml.objectToXml(newConsReciNFe()));
+        NFePrintPrompt.print("xmlConsultaReciNFe", getXmlConsRecibo());
     }
 
     private static TConsReciNFe newConsReciNFe() {
@@ -35,7 +28,6 @@ public class NFeConsRecibo {
     /**
      * Begin Getters and Setters
      */
-
     public static TConsReciNFe gettConsReciNFe() {
         return tConsReciNFe;
     }
@@ -52,12 +44,12 @@ public class NFeConsRecibo {
         NFeConsRecibo.tRetEnviNFe = tRetEnviNFe;
     }
 
-    public static String getXml() {
-        return xml;
+    public String getXmlConsRecibo() {
+        return xmlConsRecibo;
     }
 
-    public static void setXml(String xml) {
-        NFeConsRecibo.xml = xml;
+    public void setXmlConsRecibo(String xmlConsRecibo) {
+        this.xmlConsRecibo = xmlConsRecibo;
     }
 
     /**

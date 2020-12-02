@@ -1,209 +1,209 @@
 package br.com.tlmacedo.nfe.service;
 
+import br.com.tlmacedo.nfe.model.enums.TASK_NFE;
 import br.com.tlmacedo.nfe.model.vo.EnviNfeVO;
 import br.com.tlmacedo.nfe.v400.EnviNfe_v400;
-import com.google.gson.internal.Pair;
 import javafx.concurrent.Task;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.dsig.XMLSignatureException;
-import javax.xml.stream.XMLStreamException;
-import java.io.FileNotFoundException;
-import java.rmi.RemoteException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableEntryException;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.Objects;
 
 public class NFev400 {
 
-    public static boolean AMB_PRODUCAO;
+    private static boolean AMB_PRODUCAO;
 
-    public static ZoneId ZONE_ID;
-    public static DateTimeFormatter DTF_NFE_TO_LOCAL_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX",
-            new Locale("pt", "br"));
+    private static ZoneId ZONE_ID;
+    private static DateTimeFormatter DTF_NFE_TO_LOCAL_DATE;
+    //= DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX", new Locale("pt", "br"));
 
-    public static ServiceLoadCertificates CERTIFICATES;
-    public static boolean PRINT_PROMPT;
-    public static String XML_CONS_RECIBO;
-    public static String DIG_VAL;
+    private static ServiceLoadCertificates CERTIFICATES;
+    private static boolean PRINT_PROMPT;
+    private static String XML_CONS_RECIBO;
+    private static String DIG_VAL;
 
-    private String xml = null;
-    private String xmlAssinado = null;
-    private String xmlAutorizacao = null;
-    private String xmlRetAutorizacao = null;
-    private String xmlProcNfe = null;
+    private String xml;
+    private String xmlAssinado;
+    private String xmlAutorizado;
+    private String xmlRetAutorizacao;
+    private String xmlProcNfe;
 
     private EnviNfeVO enviNfeVO;
 
-    private List<Pair<String, String>> taskList = new ArrayList<>();
+    private List<TASK_NFE> taskList = new ArrayList<>();
 
-    public NFev400(ServiceLoadCertificates certificates, ZoneId zoneId, boolean ambProducao, boolean printPrompt) throws FileNotFoundException {
-        ZONE_ID = zoneId;
-        AMB_PRODUCAO = ambProducao;
-        PRINT_PROMPT = printPrompt;
+    public NFev400(ServiceLoadCertificates certificates, ZoneId zoneId, boolean ambProducao, DateTimeFormatter dtfData, boolean printPrompt) {
+        setDtfNfeToLocalDate(dtfData);
+        setZoneId(zoneId);
+        setAmbProducao(ambProducao);
+        setPrintPrompt(printPrompt);
 
-        if (CERTIFICATES == null) {
-            if (certificates == null)
-                CERTIFICATES = new ServiceLoadCertificates("certificados/tokenSafeNet5100.cfg");
-            else
-                CERTIFICATES = certificates;
+        if (getCERTIFICATES() == null) {
+//            setCERTIFICATES(Objects.requireNonNullElseGet(certificates,
+//                    () -> new ServiceLoadCertificates("certificados/NFeCacerts")));
+            setCERTIFICATES(Objects.requireNonNullElse(certificates,
+                    new ServiceLoadCertificates()));
         }
-
     }
 
+
     public void newNFev400(EnviNfeVO enviNfeVO) {
+
+        System.out.printf("%s:[%s]\n", "newNFev400", enviNfeVO);
         setEnviNfeVO(enviNfeVO);
-        getTaskList().add(new Pair<>("NFE_GERAR", "gerando NF-e"));
-        getTaskList().add(new Pair<>("NFE_ASSINAR", "assinando NF-e"));
+        getTaskList().add(TASK_NFE.NFE_GERAR);
+        getTaskList().add(TASK_NFE.NFE_ASSINAR);
         newNFev400_xmlAssinado(null);
 
     }
 
     public void newNFev400_xmlAssinado(String xml) {
+
+        System.out.printf("%s:[%s]\n", "newNFev400_xmlAssinado", xml);
         if (xml != null)
             setXmlAssinado(xml);
-        getTaskList().add(new Pair<>("NFE_TRANSMITIR", "transmitindo NF-e"));
+        getTaskList().add(TASK_NFE.NFE_TRANSMITIR);
         newNFev400_xmlConsRecibo(null);
 
     }
 
     public void newNFev400_xmlConsRecibo(String xml) {
+
+        System.out.printf("%s:[%s]\n", "newNFev400_xmlConsRecibo", xml);
         if (xml != null)
             XML_CONS_RECIBO = xml;
-        getTaskList().add(new Pair<>("NFE_RETORNO", "consultando retorno NF-e"));
+        getTaskList().add(TASK_NFE.NFE_RETORNO);
+        getTaskList().add(TASK_NFE.NFE_PROC);
         newNFev400_xmlProtNfe(null);
 
     }
 
     public void newNFev400_xmlProtNfe(String xml) {
+
+        System.out.printf("%s:[%s]\n", "newNFev400_xmlProtNfe", xml);
         if (xml != null)
             setXmlProcNfe(xml);
-        getTaskList().add(new Pair<>("NFE_PROC", "gerando DANFE da NF-e"));
+        getTaskList().add(TASK_NFE.NFE_DANFE);
 
     }
 
     public boolean errNoCertificado() throws Exception {
-        boolean err = true;
         if (CERTIFICATES.getX509Certificate() == null)
             CERTIFICATES.loadToken();
-        err = false;
-        return (err);
+        return false;
 
     }
 
-    public Task getNewTaskNFe() throws ExceptionNFe {
-        int qtdTasks = getTaskList().size();
-        final int[] cont = {0};
+    public Task newTaskNFe() {
         return new Task<Void>() {
             @Override
             protected Void call() throws Exception {
                 updateMessage("Loading...");
-                for (Pair<String, String> tarefa : getTaskList()) {
-                    updateProgress(cont[0]++, qtdTasks);
-                    Thread.sleep(200);
-                    updateMessage(String.format("%s", tarefa.second));
-                    switch (tarefa.first) {
-                        case "NFE_GERAR":
+                int contadorTarefa = 0, qtdTarefas = getTaskList().size();
+                for (TASK_NFE taskNfe : getTaskList()) {
+                    updateProgress(contadorTarefa++, qtdTarefas);
+                    updateMessage(taskNfe.getDescricao());
+                    switch (taskNfe) {
+                        case NFE_GERAR:
                             if (getEnviNfeVO() == null)
                                 Thread.currentThread().interrupt();
-                            setXml(new EnviNfe_v400().getXmlNfe(getEnviNfeVO()));
+                            setXml(new EnviNfe_v400(getEnviNfeVO()).getXml());
                             break;
-                        case "NFE_ASSINAR":
+                        case NFE_ASSINAR:
                             if (getXml() == null)
                                 Thread.currentThread().interrupt();
-                            setXmlAssinado(new NFeAssinar(getXml()).getXmlAssinadoNFe());
+                            setXmlAssinado(new NFeAssinar(getXml()).getXmlAssinado());
                             break;
-                        case "NFE_TRANSMITIR":
+                        case NFE_TRANSMITIR:
                             if (getXmlAssinado() == null)
                                 Thread.currentThread().interrupt();
-                            setXmlAutorizacao(new NFeAutorizacao(getXmlAssinado()).getXmlAutorizacaoNFe());
+                            setXmlAutorizado(new NFeAutorizacao(getXmlAssinado()).getXmlAutorizado());
                             break;
-                        case "NFE_RETORNO":
-                            if (XML_CONS_RECIBO == null)
+                        case NFE_RETORNO:
+                            if ((XML_CONS_RECIBO = new NFeConsRecibo(getXmlAutorizado()).getXmlConsRecibo()) == null)
                                 Thread.currentThread().interrupt();
-                            setXmlRetAutorizacao(new NFeRetAutorizacao(XML_CONS_RECIBO).getXmlRetAutorizacaoNFe());
+                            setXmlRetAutorizacao(new NFeRetAutorizacao(XML_CONS_RECIBO).getXmlRetornoAutorizacao());
                             break;
-                        case "NFE_PROC":
+                        case NFE_PROC:
                             if (getXmlRetAutorizacao() == null)
                                 Thread.currentThread().interrupt();
-                            setXmlProcNfe(new NFeProc(getXmlAssinado(), getXmlRetAutorizacao()).getStrResultNFeProc());
+                            setXmlProcNfe(new NFeProc(getXmlAssinado(), getXmlRetAutorizacao()).getXmlNFeProc());
                             break;
-                        case "RELATORIO_IMPRIME_NFE":
+                        case NFE_DANFE:
                             if (getXmlProcNfe() == null)
                                 Thread.currentThread().interrupt();
-//                            ServiceFileXmlSave.saveTNfeProcToFile(nFev400Property().getValue().getProcNFe().gettNfeProc());
+                            NFePrintPrompt.print("imprimirNFeProc", getXmlProcNfe());
                             break;
                     }
                 }
                 updateMessage("tarefa concluída!!!");
-                updateProgress(qtdTasks, qtdTasks);
+                updateProgress(getTaskList().size(), getTaskList().size());
                 return null;
             }
         };
     }
 
-    public void exec_tarefas() throws ExceptionNFe, JAXBException, InvalidAlgorithmParameterException, MarshalException, NoSuchAlgorithmException, KeyStoreException, XMLSignatureException, UnrecoverableEntryException, XMLStreamException, RemoteException, InterruptedException {
-//        try {
-        for (Pair<String, String> tarefa : getTaskList()) {
-            Thread.sleep(200);
-            switch (tarefa.first) {
-                case "NFE_GERAR":
-                    if (getEnviNfeVO() == null)
-                        Thread.currentThread().interrupt();
-                    setXml(new EnviNfe_v400().getXmlNfe(getEnviNfeVO()));
-                    break;
-                case "NFE_ASSINAR":
-                    if (getXml() == null)
-                        Thread.currentThread().interrupt();
-                    setXmlAssinado(new NFeAssinar(getXml()).getXmlAssinadoNFe());
-                    break;
-                case "NFE_TRANSMITIR":
-                    if (getXmlAssinado() == null)
-                        Thread.currentThread().interrupt();
-                    setXmlAutorizacao(new NFeAutorizacao(getXmlAssinado()).getXmlAutorizacaoNFe());
-                    break;
-                case "NFE_RETORNO":
-                    System.out.printf("\n0000");
-                    if (XML_CONS_RECIBO == null)
-                        Thread.currentThread().interrupt();
-                    System.out.printf("\n0001");
-                    setXmlRetAutorizacao(new NFeRetAutorizacao(XML_CONS_RECIBO).getXmlRetAutorizacaoNFe());
-                    System.out.printf("\n0007");
-                    break;
-                case "NFE_PROC":
-                    System.out.printf("\n0008");
-                    if (getXmlRetAutorizacao() == null)
-                        Thread.currentThread().interrupt();
-                    System.out.printf("\n0009");
-                    setXmlProcNfe(new NFeProc(getXmlAssinado(), getXmlRetAutorizacao()).getStrResultNFeProc());
-                    System.out.printf("\n0010");
-                    break;
-//                            case RELATORIO_IMPRIME_NFE:
-//                                if (xmlNFeProcProperty().getValue() == null)
-//                                    Thread.currentThread().interrupt();
-//                                ControllerPrincipal.getCtrlPrincipal().getPrincipalStage().getScene().setCursor(Cursor.CROSSHAIR);
-//                                ServiceFileXmlSave.saveTNfeProcToFile(nFev400Property().getValue().getProcNFe().gettNfeProc());
-//                                ControllerPrincipal.getCtrlPrincipal().getPrincipalStage().getScene().setCursor(Cursor.DEFAULT);
-//                                break;
-            }
-        }
-//        } catch (Exception ex) {
-//            System.out.printf("passou por aqui!!!!!!!!\n");
-//            ex.printStackTrace();
-//        }
-    }
-
-
     /**
      * Begin Getters and Setters
      */
+
+    public static boolean isAmbProducao() {
+        return AMB_PRODUCAO;
+    }
+
+    public static void setAmbProducao(boolean ambProducao) {
+        AMB_PRODUCAO = ambProducao;
+    }
+
+    public static ZoneId getZoneId() {
+        return ZONE_ID;
+    }
+
+    public static void setZoneId(ZoneId zoneId) {
+        ZONE_ID = zoneId;
+    }
+
+    public static DateTimeFormatter getDtfNfeToLocalDate() {
+        return DTF_NFE_TO_LOCAL_DATE;
+    }
+
+    public static void setDtfNfeToLocalDate(DateTimeFormatter dtfNfeToLocalDate) {
+        DTF_NFE_TO_LOCAL_DATE = dtfNfeToLocalDate;
+    }
+
+    public static ServiceLoadCertificates getCERTIFICATES() {
+        return CERTIFICATES;
+    }
+
+    public static void setCERTIFICATES(ServiceLoadCertificates CERTIFICATES) {
+        NFev400.CERTIFICATES = CERTIFICATES;
+    }
+
+    public static boolean isPrintPrompt() {
+        return PRINT_PROMPT;
+    }
+
+    public static void setPrintPrompt(boolean printPrompt) {
+        PRINT_PROMPT = printPrompt;
+    }
+
+    public static String getXmlConsRecibo() {
+        return XML_CONS_RECIBO;
+    }
+
+    public static void setXmlConsRecibo(String xmlConsRecibo) {
+        XML_CONS_RECIBO = xmlConsRecibo;
+    }
+
+    public static String getDigVal() {
+        return DIG_VAL;
+    }
+
+    public static void setDigVal(String digVal) {
+        DIG_VAL = digVal;
+    }
 
     public String getXml() {
         return xml;
@@ -221,12 +221,12 @@ public class NFev400 {
         this.xmlAssinado = xmlAssinado;
     }
 
-    public String getXmlAutorizacao() {
-        return xmlAutorizacao;
+    public String getXmlAutorizado() {
+        return xmlAutorizado;
     }
 
-    public void setXmlAutorizacao(String xmlAutorizacao) {
-        this.xmlAutorizacao = xmlAutorizacao;
+    public void setXmlAutorizado(String xmlAutorizado) {
+        this.xmlAutorizado = xmlAutorizado;
     }
 
     public String getXmlRetAutorizacao() {
@@ -253,11 +253,11 @@ public class NFev400 {
         this.enviNfeVO = enviNfeVO;
     }
 
-    public List<Pair<String, String>> getTaskList() {
+    public List<TASK_NFE> getTaskList() {
         return taskList;
     }
 
-    public void setTaskList(List<Pair<String, String>> taskList) {
+    public void setTaskList(List<TASK_NFE> taskList) {
         this.taskList = taskList;
     }
 

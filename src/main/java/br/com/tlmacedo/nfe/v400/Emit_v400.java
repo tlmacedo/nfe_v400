@@ -20,18 +20,28 @@ public class Emit_v400 {
          */
         if (!getEmitVO().getCnpj().equals(""))
             getEmit().setCNPJ(getEmitVO().getCnpj());
-
         /**
          * Razão Social ou Nome do emitente
          */
         if (!getEmitVO().getxNome().equals(""))
             getEmit().setXNome(getEmitVO().getxNome());
-
         /**
          * Nome fantasia
          */
         if (!getEmitVO().getxFant().equals(""))
             getEmit().setXFant(getEmitVO().getxFant());
+
+//        if (NFev400.isAmbProducao()) {
+//            if (!getEmitVO().getCnpj().equals(""))
+//                getEmit().setCNPJ(getEmitVO().getCnpj());
+//            if (!getEmitVO().getxNome().equals(""))
+//                getEmit().setXNome(getEmitVO().getxNome());
+//            if (!getEmitVO().getxFant().equals(""))
+//                getEmit().setXFant(getEmitVO().getxFant());
+//        } else {
+//            getEmit().setCNPJ("99999999000191");
+//            getEmit().setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
+//        }
 
         getEmit().setEnderEmit(new Ender_v400(getEmitVO().getEnder()).gettEnderEmi());
 

@@ -2,7 +2,7 @@ package br.com.tlmacedo.nfe.v400;
 
 import br.com.tlmacedo.nfe.model.vo.EnviNfeVO;
 import br.com.tlmacedo.nfe.model.vo.NfeVO;
-import br.com.tlmacedo.nfe.service.NFev400;
+import br.com.tlmacedo.nfe.service.NFePrintPrompt;
 import br.com.tlmacedo.nfe.service.ServiceUtilXml;
 import br.inf.portalfiscal.xsd.nfe.enviNFe.TEnviNFe;
 
@@ -14,7 +14,8 @@ public class EnviNfe_v400 {
     private static NfeVO nfeVO;
     private String xml;
 
-    public String getXmlNfe(EnviNfeVO enviNfeVO) throws JAXBException {
+    public EnviNfe_v400(EnviNfeVO enviNfeVO) throws JAXBException {
+
         settEnviNFe(new TEnviNFe());
         setNfeVO(enviNfeVO.getNfe());
         gettEnviNFe().setVersao(enviNfeVO.getVersao());
@@ -22,11 +23,8 @@ public class EnviNfe_v400 {
         gettEnviNFe().setIndSinc(enviNfeVO.getIndSinc());
         gettEnviNFe().getNFe().add(new Nfe_v400().getTnFe());
         setXml(ServiceUtilXml.objectToXml(gettEnviNFe()));
-        if (NFev400.PRINT_PROMPT)
-            System.out.printf("\n%sxml: \n%s\n",
-                    (NFev400.AMB_PRODUCAO) ? "prod_" : "hom_",
-                    getXml());
-        return getXml();
+        NFePrintPrompt.print("xmlNFe", xml);
+
     }
 
     /**
@@ -48,7 +46,6 @@ public class EnviNfe_v400 {
     public static void setNfeVO(NfeVO nfeVO) {
         EnviNfe_v400.nfeVO = nfeVO;
     }
-
 
     public String getXml() {
         return xml;
