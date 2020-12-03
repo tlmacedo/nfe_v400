@@ -9,12 +9,11 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
 
 public class NFev400 {
 
     private static boolean AMB_PRODUCAO;
-
     private static ZoneId ZONE_ID;
     private static DateTimeFormatter DTF_NFE_TO_LOCAL_DATE;
     //= DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX", new Locale("pt", "br"));
@@ -34,24 +33,21 @@ public class NFev400 {
 
     private List<TASK_NFE> taskList = new ArrayList<>();
 
-    public NFev400(ServiceLoadCertificates certificates, ZoneId zoneId, boolean ambProducao, DateTimeFormatter dtfData, boolean printPrompt) {
-        setDtfNfeToLocalDate(dtfData);
-        setZoneId(zoneId);
+    public NFev400(boolean ambProducao, boolean printPrompt) {
+        setDtfNfeToLocalDate(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX", new Locale(System.getProperty("nfeLang", "pt"),
+                System.getProperty("nfeCountry", "br"))));
+        setZoneId(ZoneId.of(System.getProperty("nfeZoneId", "America/Manaus")));
         setAmbProducao(ambProducao);
         setPrintPrompt(printPrompt);
 
-        if (getCERTIFICATES() == null) {
-//            setCERTIFICATES(Objects.requireNonNullElseGet(certificates,
-//                    () -> new ServiceLoadCertificates("certificados/NFeCacerts")));
-            setCERTIFICATES(Objects.requireNonNullElse(certificates,
-                    new ServiceLoadCertificates()));
-        }
+        if (getCERTIFICATES() == null)
+            setCERTIFICATES(new ServiceLoadCertificates());
+
     }
 
 
-    public void newNFev400(EnviNfeVO enviNfeVO) {
+    public void setNewNFe(EnviNfeVO enviNfeVO) {
 
-        System.out.printf("%s:[%s]\n", "newNFev400", enviNfeVO);
         setEnviNfeVO(enviNfeVO);
         getTaskList().add(TASK_NFE.NFE_GERAR);
         getTaskList().add(TASK_NFE.NFE_ASSINAR);

@@ -8,6 +8,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.util.Base64;
 
 public class NFeProc {
@@ -20,13 +21,16 @@ public class NFeProc {
     private TRetConsReciNFe reciNFe;
 
 
-    public NFeProc(String xmlNFeAssinado, String xmlNFeRetAutorizacao) throws JAXBException {
+    public NFeProc(String xmlNFeAssinado, String xmlNFeRetAutorizacao) throws JAXBException, IOException {
 
         settNfeProc(new TNfeProc());
         setStrNFeAssinado(xmlNFeAssinado);
         setStrNFeRetAutorizacao(xmlNFeRetAutorizacao);
         setReciNFe(ServiceUtilXml.xmlToObject(xmlNFeRetAutorizacao, TRetConsReciNFe.class));
         setXmlNFeProc(ServiceUtilXml.objectToXml(getResultNFeProc()));
+
+        ServiceFileXmlSave.saveTNfeProcToFile(gettNfeProc());
+
         NFePrintPrompt.print("xmlNFeProc", getXmlNFeProc());
 
     }

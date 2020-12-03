@@ -5,6 +5,7 @@ import br.inf.portalfiscal.xsd.nfe.consStatServ.ObjectFactory;
 import br.inf.portalfiscal.xsd.nfe.consStatServ.TConsStatServ;
 import br.inf.portalfiscal.xsd.nfe.enviNFe.TEnviNFe;
 import br.inf.portalfiscal.xsd.nfe.nfe.TNFe;
+import br.inf.portalfiscal.xsd.nfe.procNFe.TNfeProc;
 import br.inf.portalfiscal.xsd.nfe.retConsReciNFe.TProtNFe;
 import br.inf.portalfiscal.xsd.nfe.retConsReciNFe.TRetConsReciNFe;
 import br.inf.portalfiscal.xsd.nfe.retEnviNFe.TRetEnviNFe;
@@ -20,6 +21,7 @@ public class ServiceUtilXml {
     private static final String TENVINFE = "TEnviNFe";
     private static final String TNFE = "TNFe";
     private static final String TNFEPROC = "TNfeProc";
+    private static final String TPROD_LEIAUTE = "TNfeProc";
     private static final String TCONSRECINFE = "TConsReciNFe";
     private static final String RETORNO_ENVIO = "TRetEnviNFe";
 
@@ -73,10 +75,10 @@ public class ServiceUtilXml {
                 context = JAXBContext.newInstance(TNFe.class);
                 element = new br.inf.portalfiscal.xsd.nfe.nfe.ObjectFactory().createNFe((TNFe) obj);
                 break;
-//            case "TNfeProc":
-//                context = JAXBContext.newInstance(TNfeProc.class);
-//                element = new br.inf.portalfiscal.xsd.nfe.procNFe.ObjectFactory().createNfeProc((TNfeProc) obj);
-//                break;
+            case "TNfeProc":
+                context = JAXBContext.newInstance(TNfeProc.class);
+                element = new br.inf.portalfiscal.xsd.nfe.procNFe.ObjectFactory().createNfeProc((TNfeProc) obj);
+                break;
             case "TProtNFe":
                 context = JAXBContext.newInstance(TProtNFe.class);
                 element = new br.inf.portalfiscal.xsd.nfe.retConsReciNFe.ObjectFactory().createRetConsReciNFe((TRetConsReciNFe) obj);

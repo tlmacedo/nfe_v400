@@ -28,7 +28,7 @@ public class ServiceLoadCertificates {
     private String alias;
 
     public ServiceLoadCertificates() {
-        String configName = getClass().getClassLoader().getResource("certificados/tokenSafeNet5100.cfg").getPath();
+        String configName = getClass().getClassLoader().getResource("certificados/" + System.getProperty("nfeTokenUtilizado", "tokenSafeNet5100.cfg")).getPath();
 
         System.out.printf("configName:[%s]\n", configName);
 

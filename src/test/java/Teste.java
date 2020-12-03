@@ -61,10 +61,7 @@ public class Teste {
             String LOCAL_TIME_ZONE = "America/Manaus";
             ZoneId MY_ZONE_TIME = ZoneId.of(LOCAL_TIME_ZONE);
             DateTimeFormatter DTF_MYSQL_DATAHORAFUSO = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX", LOCALE);
-            NFev400 nFev400 = new NFev400(null,
-                    MY_ZONE_TIME,
-                    false,
-                    DTF_MYSQL_DATAHORAFUSO, true);
+            NFev400 nFev400 = new NFev400(false, true);
             nFev400.errNoCertificado();
             nFev400.setXml(xml);
             nFev400.setXmlAssinado(new NFeAssinar(nFev400.getXml()).getXmlAssinado());

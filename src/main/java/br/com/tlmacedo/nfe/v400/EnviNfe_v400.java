@@ -3,10 +3,12 @@ package br.com.tlmacedo.nfe.v400;
 import br.com.tlmacedo.nfe.model.vo.EnviNfeVO;
 import br.com.tlmacedo.nfe.model.vo.NfeVO;
 import br.com.tlmacedo.nfe.service.NFePrintPrompt;
+import br.com.tlmacedo.nfe.service.ServiceFileXmlSave;
 import br.com.tlmacedo.nfe.service.ServiceUtilXml;
 import br.inf.portalfiscal.xsd.nfe.enviNFe.TEnviNFe;
 
 import javax.xml.bind.JAXBException;
+import java.io.IOException;
 
 public class EnviNfe_v400 {
 
@@ -14,7 +16,7 @@ public class EnviNfe_v400 {
     private static NfeVO nfeVO;
     private String xml;
 
-    public EnviNfe_v400(EnviNfeVO enviNfeVO) throws JAXBException {
+    public EnviNfe_v400(EnviNfeVO enviNfeVO) throws JAXBException, IOException {
 
         settEnviNFe(new TEnviNFe());
         setNfeVO(enviNfeVO.getNfe());
@@ -24,7 +26,12 @@ public class EnviNfe_v400 {
         gettEnviNFe().getNFe().add(new Nfe_v400().getTnFe());
         setXml(ServiceUtilXml.objectToXml(gettEnviNFe()));
         NFePrintPrompt.print("xmlNFe", xml);
+        saveXml();
 
+    }
+
+    private void saveXml() throws IOException {
+        ServiceFileXmlSave.saveXml(System.getProperty("pathNFeSaveXmlOut"), getXml());
     }
 
     /**
